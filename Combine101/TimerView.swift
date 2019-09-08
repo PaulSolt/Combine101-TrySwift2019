@@ -59,13 +59,15 @@ struct TimerView: View {
         
         return Timer.publish(every: 0.2, on: RunLoop.main, in: .common)
             .autoconnect()
-            .sink {
-                
-                // how much time has passed?
-//                textField.text = "00:01"
-                self.timeText = self.timeFormatter.string(from: self.startDate, to: $0) ?? "00:00"
-                print($0)
+            .compactMap { (now) -> String? in
+                self.timeFormatter.string(from: self.startDate, to: now)
             }
+            .assign(to: \.timeText, on: self) // BUG: no autocomplete on 
+        
+//            .sink {
+//                self.timeText = self.timeFormatter.string(from: self.startDate, to: $0) ?? "00:00"
+//                print($0)
+//            }
     }
     
     var timeFormatter: DateComponentsFormatter = {
